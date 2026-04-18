@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: #0c0c0e; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+.frame-wrap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #000; }
+.phone { width: 100%; height: 100%; max-width: 500px; background: #0c0c0e; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.sb{height:calc(50px + env(safe-area-inset-top, 0px));background:#0c0c0e;display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top, 0px) 26px 0;flex-shrink:0;}
+.sb-time{font-size:15px;font-weight:600;color:#fff;}
+.sb-r{display:flex;gap:5px;align-items:center;}
+.screen{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.top-bar{background:#0c0c0e;padding:6px 20px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo{font-size:17px;font-weight:600;color:#fff;letter-spacing:-0.03em;}
+.logo span{color:#3b8eff;}
+.alert-dot{width:8px;height:8px;border-radius:50%;background:#ff453a;position:absolute;top:2px;right:2px;}
+.icon-btn{width:32px;height:32px;border-radius:10px;background:#1c1c1e;border:0.5px solid #2a2a2a;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;}
+.content-area{flex:1;overflow-y:auto;background:#111113;display:flex;flex-direction:column;}
+
+.header-zone{background:#0c0c0e;flex-shrink:0;padding-bottom:12px;}
+
+.tab-row{display:flex;border-bottom:0.5px solid #1e1e20;padding:0 16px;}
+.htab{font-size:12px;font-weight:500;padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;color:#555;white-space:nowrap;}
+.htab.active{color:#fff;border-bottom-color:#3b8eff;}
+
+.watchlist-view{padding:10px 16px 0;}
+.wl-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid #1a1a1c;}
+.wl-row:last-child{border-bottom:none;}
+.wl-left{display:flex;flex-direction:column;gap:2px;}
+.wl-name{font-size:13px;font-weight:500;color:#fff;}
+.wl-sub{font-size:10px;color:#555;}
+.wl-right{text-align:right;}
+.wl-price{font-size:13px;font-weight:500;color:#fff;}
+.wl-chg{font-size:11px;padding:2px 7px;border-radius:4px;margin-top:3px;display:inline-block;}
+.neg{color:#ff453a;background:rgba(255,69,58,.12);}
+.pos{color:#30d158;background:rgba(48,209,88,.12);}
+.neu{color:#aaa;background:rgba(170,170,170,.1);}
+
+.portfolio-view{padding:8px 16px 0;}
+.port-summary{display:flex;gap:8px;margin-bottom:10px;}
+.port-pill{flex:1;background:#1a1a1c;border-radius:10px;padding:9px 10px;}
+.port-pill-label{font-size:10px;color:#555;margin-bottom:3px;}
+.port-pill-val{font-size:14px;font-weight:500;}
+.port-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #1a1a1c;}
+.port-row:last-child{border-bottom:none;}
+.port-name{font-size:12px;font-weight:500;color:#fff;}
+.port-sub{font-size:10px;color:#555;margin-top:2px;}
+.port-right{text-align:right;}
+.port-qty{font-size:11px;color:#666;margin-bottom:2px;}
+.port-pnl{font-size:12px;font-weight:500;}
+
+.pnl-view{padding:8px 16px 0;}
+.pnl-summary{display:flex;gap:8px;margin-bottom:10px;}
+.pnl-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #1a1a1c;}
+.pnl-row:last-child{border-bottom:none;}
+.pnl-name{font-size:12px;font-weight:500;color:#fff;}
+.pnl-type{font-size:10px;color:#555;margin-top:2px;}
+.pnl-bar-wrap{width:80px;height:4px;background:#222;border-radius:2px;margin-top:4px;}
+.pnl-bar{height:4px;border-radius:2px;}
+.pnl-amt{font-size:12px;font-weight:500;text-align:right;}
+.pnl-pct{font-size:10px;color:#555;margin-top:2px;text-align:right;}
+
+.scroll-body{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:11px;}
+.scenario-track-wrap{background:#1a1a1c;border-radius:14px;padding:12px 14px;}
+.track-label{font-size:10px;font-weight:500;color:#555;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.track-pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;}
+.track-pills::-webkit-scrollbar{display:none;}
+.spill{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;cursor:pointer;border:0.5px solid transparent;transition:all .15s;}
+.spill.active{background:#3b8eff;color:#fff;border-color:#3b8eff;}
+.spill.inactive{background:#252527;color:#888;border-color:#2e2e30;}
+.signal-card{border-radius:14px;padding:12px 14px;border:0.5px solid transparent;}
+.sc-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.sc-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sc-title{font-size:13px;font-weight:500;color:#fff;}
+.sc-sub{font-size:11px;color:#666;margin-top:1px;}
+.sc-body{font-size:12px;color:#aaa;line-height:1.55;}
+.sc-stat{font-size:11px;color:#666;margin-top:7px;padding-top:7px;border-top:0.5px solid #222;line-height:1.5;}
+.action-card{background:#1a1a1c;border:0.5px solid #252527;border-radius:14px;padding:12px 14px;}
+.ac-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.ac-btns{display:flex;flex-direction:column;gap:7px;}
+.ac-btn{width:100%;padding:12px 14px;border-radius:11px;font-size:13px;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.ac-btn-p{background:#3b8eff;color:#fff;}
+.ac-btn-s{background:#252527;color:#ddd;border:0.5px solid #333;}
+.ac-btn-d{background:rgba(255,69,58,.1);color:#ff6b63;border:0.5px solid rgba(255,69,58,.2);}
+.ac-btn-g{background:rgba(48,209,88,.1);color:#30d158;border:0.5px solid rgba(48,209,88,.2);}
+.hedge-card{background:#1a1a1c;border:0.5px solid #252527;border-radius:14px;padding:12px 14px;}
+.hedge-row{display:flex;gap:8px;margin-top:8px;}
+.hpill{flex:1;background:#222;border-radius:10px;padding:10px 8px;text-align:center;}
+.hv{font-size:14px;font-weight:500;margin-bottom:3px;}
+.hl{font-size:10px;color:#666;}
+.cooldown-card{background:#1a1a1c;border:1.5px solid rgba(255,69,58,.3);border-radius:14px;padding:14px;}
+.cd-ring-wrap{display:flex;align-items:center;justify-content:center;margin:6px 0;}
+.tap-counter{display:flex;gap:6px;margin-top:8px;justify-content:center;}
+.tap-dot{width:10px;height:10px;border-radius:50%;background:#252527;border:0.5px solid #333;}
+.tap-dot.filled{background:#3b8eff;}
+.pnl-compare{display:flex;gap:8px;margin-top:8px;}
+.pc-pill{flex:1;border-radius:10px;padding:9px 8px;text-align:center;}
+.pcv{font-size:15px;font-weight:500;margin-bottom:2px;}
+.pcl{font-size:10px;}
+.bottom-nav{height:calc(60px + env(safe-area-inset-bottom, 0px));background:#0c0c0e;border-top:0.5px solid #1e1e20;display:flex;align-items:center;justify-content:space-around;padding-bottom:calc(4px + env(safe-area-inset-bottom, 0px));flex-shrink:0;}
+.nav-i{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0 10px;}
+.nav-dot-line{width:4px;height:4px;border-radius:50%;}
+.nav-lbl{font-size:9px;}
+</style>
+</head>
+<body>
+
+<div class="frame-wrap">
+<div class="phone">
+  <div class="sb">
+    <div class="sb-time">9:41</div>
+    <div class="sb-r">
+      <svg width="16" height="10" viewBox="0 0 16 10"><rect x="0" y="4" width="3" height="6" rx="1" fill="white" opacity="0.5"/><rect x="4.5" y="2.5" width="3" height="7.5" rx="1" fill="white" opacity="0.7"/><rect x="9" y="0.5" width="3" height="9.5" rx="1" fill="white"/></svg>
+      <svg width="24" height="11" viewBox="0 0 24 11"><rect x="0" y="1.5" width="20" height="8" rx="2" stroke="white" stroke-width="1" fill="none" opacity="0.6"/><rect x="1.5" y="3" width="14" height="5" rx="1" fill="white" opacity="0.85"/><rect x="21" y="4" width="2.5" height="3" rx="1" fill="white" opacity="0.4"/></svg>
+    </div>
+  </div>
+  <div class="screen">
+    <div class="top-bar">
+      <div class="logo">Trade<span>Guard</span></div>
+      <div style="display:flex;gap:8px;">
+        <div class="icon-btn" id="notif-btn">
+          <svg width="14" height="14" fill="none" stroke="#aaa" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="alert-dot" id="notif-red" style="display:none;"></div>
+        </div>
+        <div class="icon-btn">
+          <svg width="14" height="14" fill="none" stroke="#aaa" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-area" id="content-area">
+      <div class="header-zone" id="header-zone">
+        <div class="tab-row" id="htab-row"></div>
+        <div id="htab-content"></div>
+      </div>
+      <div class="scroll-body" id="scroll-body"></div>
+    </div>
+
+    <div class="bottom-nav" id="bottom-nav"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const NAVS=[
+  {id:'n1',label:'Nudge',color:'#3b8eff'},
+  {id:'n2',label:'Friction',color:'#ff9f0a'},
+  {id:'n3',label:'Alternate',color:'#30d158'},
+  {id:'n4',label:'Hedge',color:'#bf5af2'},
+  {id:'n5',label:'Cooldown',color:'#ff453a'},
+];
+
+const HEADER_DATA = {
+  n1:{
+    watchlist:[
+      {name:'NIFTY 50 DEC',sub:'Futures',price:'21,150',chg:'-450 (-2.1%)',dir:'neg'},
+      {name:'BANKNIFTY',sub:'Spot',price:'47,320',chg:'-680 (-1.4%)',dir:'neg'},
+      {name:'RELIANCE',sub:'NSE',price:'2,918',chg:'-32 (-1.1%)',dir:'neg'},
+      {name:'INFY',sub:'NSE',price:'1,482',chg:'+14 (+0.9%)',dir:'pos'},
+    ],
+    portfolio:[
+      {total:'₹10,42,000',day:'-₹38,200',dayDir:'neg'},
+      {name:'NIFTY 50 DEC',sub:'Futures • Long',qty:'1,000 qty',pnl:'-₹2,50,000',pnlDir:'neg',pct:'-2.1%'},
+      {name:'RELIANCE',sub:'Equity',qty:'200 qty',pnl:'-₹6,400',pnlDir:'neg',pct:'-1.1%'},
+      {name:'INFY',sub:'Equity',qty:'150 qty',pnl:'+₹2,100',pnlDir:'pos',pct:'+0.9%'},
+    ],
+    pnl:{
+      today:'-₹38,200', todayDir:'neg', week:'-₹52,400', weekDir:'neg',
+      rows:[
+        {name:'NIFTY 50 DEC',type:'Panic exit attempt',amt:'-₹2,50,000',pct:'81%',dir:'neg'},
+        {name:'RELIANCE',type:'Equity long',amt:'-₹6,400',pct:'22%',dir:'neg'},
+        {name:'INFY',type:'Equity long',amt:'+₹2,100',pct:'8%',dir:'pos'},
+      ]
+    }
+  },
+  n2:{
+    watchlist:[
+      {name:'BANKNIFTY WKL',sub:'Options CE',price:'47,320',chg:'-680 (-1.4%)',dir:'neg'},
+      {name:'NIFTY 50',sub:'Spot',price:'21,150',chg:'-450 (-2.1%)',dir:'neg'},
+      {name:'HDFC BANK',sub:'NSE',price:'1,618',chg:'-28 (-1.7%)',dir:'neg'},
+      {name:'SBI',sub:'NSE',price:'782',chg:'+3 (+0.4%)',dir:'pos'},
+    ],
+    portfolio:[
+      {total:'₹8,28,000',day:'-₹42,000',dayDir:'neg'},
+      {name:'BNKN 48000 CE',sub:'Options • Closed loss',qty:'50 lots',pnl:'-₹42,000',pnlDir:'neg',pct:'-8.3%'},
+      {name:'HDFC BANK',sub:'Equity',qty:'100 qty',pnl:'-₹2,800',pnlDir:'neg',pct:'-1.7%'},
+      {name:'SBI',sub:'Equity',qty:'300 qty',pnl:'+₹900',pnlDir:'pos',pct:'+0.4%'},
+    ],
+    pnl:{
+      today:'-₹42,000', todayDir:'neg', week:'-₹68,000', weekDir:'neg',
+      rows:[
+        {name:'BNKN 48000 CE',type:'Revenge trade locked',amt:'-₹42,000',pct:'91%',dir:'neg'},
+        {name:'HDFC BANK',type:'Equity hold',amt:'-₹2,800',pct:'18%',dir:'neg'},
+        {name:'SBI',type:'Equity hold',amt:'+₹900',pct:'5%',dir:'pos'},
+      ]
+    }
+  },
+  n3:{
+    watchlist:[
+      {name:'RELIANCE',sub:'Futures',price:'2,918',chg:'-32 (-1.1%)',dir:'neg'},
+      {name:'TCS',sub:'NSE',price:'3,840',chg:'+22 (+0.6%)',dir:'pos'},
+      {name:'WIPRO',sub:'NSE',price:'448',chg:'-5 (-1.1%)',dir:'neg'},
+      {name:'LTIM',sub:'NSE',price:'5,120',chg:'+44 (+0.9%)',dir:'pos'},
+    ],
+    portfolio:[
+      {total:'₹12,10,000',day:'-₹9,600',dayDir:'neg'},
+      {name:'RELIANCE FUT',sub:'Futures • Long',qty:'5 lots',pnl:'-₹8,000',pnlDir:'neg',pct:'-1.1%'},
+      {name:'TCS',sub:'Equity',qty:'50 qty',pnl:'+₹1,100',pnlDir:'pos',pct:'+0.6%'},
+      {name:'WIPRO',sub:'Equity',qty:'200 qty',pnl:'-₹1,000',pnlDir:'neg',pct:'-1.1%'},
+    ],
+    pnl:{
+      today:'-₹9,600', todayDir:'neg', week:'+₹14,200', weekDir:'pos',
+      rows:[
+        {name:'RELIANCE FUT',type:'Stop-loss suggested',amt:'-₹8,000',pct:'65%',dir:'neg'},
+        {name:'WIPRO',type:'Equity hold',amt:'-₹1,000',pct:'18%',dir:'neg'},
+        {name:'TCS',type:'Equity hold',amt:'+₹1,100',pct:'17%',dir:'pos'},
+      ]
+    }
+  },
+  n4:{
+    watchlist:[
+      {name:'NIFTY 50 DEC',sub:'Futures • Long',price:'21,150',chg:'-450 (-2.1%)',dir:'neg'},
+      {name:'NIFTY 21000 PE',sub:'Options • Hedge',price:'182',chg:'+64 (+54%)',dir:'pos'},
+      {name:'NIFTY 21500 CE',sub:'Options • Collar',price:'48',chg:'-22 (-31%)',dir:'neg'},
+      {name:'INDIAVIX',sub:'Volatility',price:'18.4',chg:'+3.2 (+21%)',dir:'neg'},
+    ],
+    portfolio:[
+      {total:'₹10,42,000',day:'-₹38,200',dayDir:'neg'},
+      {name:'NIFTY 50 DEC',sub:'Futures • Long unhedged',qty:'1,000 qty',pnl:'-₹2,50,000',pnlDir:'neg',pct:'-2.1%'},
+      {name:'21000 PE (suggest)',sub:'Hedge instrument',qty:'1 lot',pnl:'Cap: ₹15k loss',pnlDir:'pos',pct:'Hedge'},
+      {name:'21500 CE (suggest)',sub:'Collar leg',qty:'1 lot',pnl:'+₹3,800 premium',pnlDir:'pos',pct:'Income'},
+    ],
+    pnl:{
+      today:'-₹2,50,000', todayDir:'neg', week:'-₹2,84,000', weekDir:'neg',
+      rows:[
+        {name:'NIFTY FUT unhedged',type:'Max loss: unlimited',amt:'-₹2,50,000',pct:'100%',dir:'neg'},
+        {name:'With 21000 PE hedge',type:'Max loss capped',amt:'-₹15,000',pct:'6%',dir:'neg'},
+        {name:'Collar (PE+CE)',type:'Net cost ~₹400',amt:'-₹15,000',pct:'6%',dir:'pos'},
+      ]
+    }
+  },
+  n5:{
+    watchlist:[
+      {name:'BANKNIFTY',sub:'Options • Locked',price:'47,100',chg:'-1,220 (-2.5%)',dir:'neg'},
+      {name:'NIFTY 50',sub:'Spot',price:'21,000',chg:'-600 (-2.8%)',dir:'neg'},
+      {name:'INDIAVIX',sub:'Volatility Index',price:'22.1',chg:'+5.8 (+36%)',dir:'neg'},
+      {name:'USDINR',sub:'Currency',price:'83.42',chg:'+0.38 (+0.5%)',dir:'neg'},
+    ],
+    portfolio:[
+      {total:'₹7,84,000',day:'-₹94,000',dayDir:'neg'},
+      {name:'BNKN WKL CE',sub:'Options • 3 losing trades',qty:'30 lots',pnl:'-₹82,000',pnlDir:'neg',pct:'-9.5%'},
+      {name:'NIFTY 50 FUT',sub:'Futures • Closed',qty:'500 qty',pnl:'-₹12,000',pnlDir:'neg',pct:'-1.2%'},
+      {name:'Cash',sub:'Available margin',qty:'',pnl:'₹3,22,000',pnlDir:'pos',pct:'Protected'},
+    ],
+    pnl:{
+      today:'-₹94,000', todayDir:'neg', week:'-₹1,18,000', weekDir:'neg',
+      rows:[
+        {name:'BNKN options',type:'3 emotional trades',amt:'-₹82,000',pct:'87%',dir:'neg'},
+        {name:'NIFTY futures',type:'Closed at loss',amt:'-₹12,000',pct:'13%',dir:'neg'},
+        {name:'Saved by lock',type:'Est. avoided loss',amt:'₹52,000',pct:'',dir:'pos'},
+      ]
+    }
+  }
+};
+
+const SCENARIOS = {
+  n1:{
+    pills:['Panic sell','Rapid buying','Market crash','Choppy session'],
+    content:(pill)=>{
+      const d={
+        'Panic sell':{sig:{bg:'rgba(255,69,58,.08)',border:'rgba(255,69,58,.2)',iconColor:'#ff453a',iconBg:'rgba(255,69,58,.15)',title:'Rapid exit detected',sub:'5 sell orders in 3 min',body:'You have placed 5 sell orders in under 3 minutes during a 2.1% market drop. This pattern matches your historical panic exits.',stat:'Your panic exits led to a recovery miss avg of ₹38,200 in past 6 months.'},action:{label:'What TradeGuard suggests',btns:[{t:'Slow down: pause 90 seconds',c:'ac-btn-p'},{t:'Review your open P&L calmly',c:'ac-btn-s'},{t:'I know what I am doing',c:'ac-btn-s'}]}},
+        'Rapid buying':{sig:{bg:'rgba(255,159,10,.08)',border:'rgba(255,159,10,.2)',iconColor:'#ff9f0a',iconBg:'rgba(255,159,10,.15)',title:'High-frequency buying',sub:'8 buy orders in 7 min',body:'You have placed 8 buy orders in 7 minutes. Macro news (RBI policy) was released 12 min ago. Acting on fresh news without digesting it carries elevated risk.',stat:'Post-news impulsive buys in your history avg -6.2% over 5 days.'},action:{label:'What TradeGuard suggests',btns:[{t:'Wait 5 min before next order',c:'ac-btn-p'},{t:'Read macro summary first',c:'ac-btn-s'},{t:'Continue anyway',c:'ac-btn-s'}]}},
+        'Market crash':{sig:{bg:'rgba(255,69,58,.08)',border:'rgba(255,69,58,.2)',iconColor:'#ff453a',iconBg:'rgba(255,69,58,.15)',title:'Broad market stress',sub:'Nifty down 3.1% today',body:'The broader market is in a stress event. 73% of stocks are in the red. Selling now locks in losses at maximum emotional pressure, historically the worst exit point.',stat:'Broad crash exits in your profile: position recovered in 3 of 4 cases within 7 trading days.'},action:{label:'What TradeGuard suggests',btns:[{t:'Hold and monitor for 30 min',c:'ac-btn-p'},{t:'Reduce exposure by 25% only',c:'ac-btn-s'},{t:'Exit fully',c:'ac-btn-d'}]}},
+        'Choppy session':{sig:{bg:'rgba(170,170,170,.07)',border:'rgba(170,170,170,.15)',iconColor:'#888',iconBg:'rgba(170,170,170,.1)',title:'Choppy market detected',sub:'High intraday volatility',body:'Today\'s session shows unusually choppy price action. Traders who overtrade in choppy markets lose to bid-ask spread and noise. Your trade count is already 2x your daily average.',stat:'On high-volatility days, your win rate drops from 58% to 34%.'},action:{label:'What TradeGuard suggests',btns:[{t:'Set a trade limit for today',c:'ac-btn-p'},{t:'Switch to observation mode',c:'ac-btn-s'}]}}
+      };return d[pill]||d['Panic sell'];
+    }
+  },
+  n2:{
+    pills:['Panic exit','Revenge trade','News spike','FOMO buy'],
+    content:(pill)=>{
+      const d={
+        'Panic exit':{sig:{bg:'rgba(255,159,10,.08)',border:'rgba(255,159,10,.2)',iconColor:'#ff9f0a',iconBg:'rgba(255,159,10,.15)',title:'Exit blocked: 3-tap required',sub:'Your vault rule is active',body:'You pre-set a rule: full position exits during 1%+ drops require 3 deliberate confirmations. This slows the emotional exit loop.',stat:'Users who complete 3-tap confirm cancel their exit in 67% of cases.'},action:{label:'Confirm exit — tap 3 times',btns:[{t:'Tap 1 of 3: I want to exit',c:'ac-btn-d'},{t:'Set stop-loss instead (recommended)',c:'ac-btn-p'}],taps:true}},
+        'Revenge trade':{sig:{bg:'rgba(255,69,58,.08)',border:'rgba(255,69,58,.2)',iconColor:'#ff453a',iconBg:'rgba(255,69,58,.15)',title:'30-min cooldown active',sub:'Post-loss lockout engaged',body:'You just closed at -₹42,000. Your pre-set rule locks new positions for 30 minutes after a loss exceeding 3%. This is your rule, not ours.',stat:'Your post-loss trades have an avg outcome of -₹14,200 vs +₹3,100 for regular trades.'},action:{label:'Status',btns:[{t:'Trading resumes in 24m 18s',c:'ac-btn-s'},{t:'Override (requires written reason)',c:'ac-btn-d'}]}},
+        'News spike':{sig:{bg:'rgba(191,90,242,.08)',border:'rgba(191,90,242,.2)',iconColor:'#bf5af2',iconBg:'rgba(191,90,242,.15)',title:'News-driven trade flagged',sub:'SEBI circular 4 min ago',body:'A major SEBI circular dropped 4 minutes ago. You are attempting a large options buy. TradeGuard requires a 10-minute digest window before news-driven trades above ₹50,000.',stat:'Immediate post-news trades in your history: 61% were reversed within 2 hours.'},action:{label:'Friction applied',btns:[{t:'Execute in 10 minutes automatically',c:'ac-btn-p'},{t:'Read news summary',c:'ac-btn-s'},{t:'Force execute now',c:'ac-btn-d'}]}},
+        'FOMO buy':{sig:{bg:'rgba(48,209,88,.08)',border:'rgba(48,209,88,.2)',iconColor:'#30d158',iconBg:'rgba(48,209,88,.15)',title:'Protected account flagged',sub:'Emergency fund detected',body:'You are buying a stock up 14% from a fund tagged as your Emergency Fund. This account has a FOMO guard. The purchase will execute tomorrow morning unless cancelled.',stat:'FOMO entries avg 12% worse entry vs waiting 3 days. Emergency fund rule: set by you on 14 Apr.'},action:{label:'Default action set',btns:[{t:'Schedule for 9:15 AM (default)',c:'ac-btn-p'},{t:'Cancel trade',c:'ac-btn-s'},{t:'Override and buy now',c:'ac-btn-d'}]}}
+      };return d[pill]||d['Panic exit'];
+    }
+  },
+  n3:{
+    pills:['Stop-loss','Position trim','Scale out','Wait & watch'],
+    content:(pill)=>{
+      const d={
+        'Stop-loss':{sig:{bg:'rgba(59,142,255,.08)',border:'rgba(59,142,255,.25)',iconColor:'#3b8eff',iconBg:'rgba(59,142,255,.15)',title:'Set a stop-loss instead',sub:'Alternative to selling out',body:'Instead of exiting the full position, a stop-loss at 2,880 caps your max loss at ₹22,000 while keeping your position alive if the market recovers.',stat:'Traders who use stop-losses vs panic exits retain on avg 34% more capital in recovery moves.'},action:{label:'TradeGuard recommends',btns:[{t:'Set stop-loss at 2,880 (1 tap)',c:'ac-btn-p'},{t:'Customise stop-loss level',c:'ac-btn-s'},{t:'Exit full position instead',c:'ac-btn-d'}]}},
+        'Position trim':{sig:{bg:'rgba(59,142,255,.08)',border:'rgba(59,142,255,.25)',iconColor:'#3b8eff',iconBg:'rgba(59,142,255,.15)',title:'Trim instead of exit',sub:'Reduce exposure partially',body:'Selling 30% of your position reduces emotional pressure while keeping upside exposure. This is statistically better than a full exit in trending markets.',stat:'Partial exits during dips return 2.1x better outcomes vs full exits in your trade history.'},action:{label:'Choose your exit size',btns:[{t:'Trim 25% of position',c:'ac-btn-p'},{t:'Trim 50% of position',c:'ac-btn-s'},{t:'Exit all',c:'ac-btn-d'}]}},
+        'Scale out':{sig:{bg:'rgba(59,142,255,.08)',border:'rgba(59,142,255,.25)',iconColor:'#3b8eff',iconBg:'rgba(59,142,255,.15)',title:'Scale out in tranches',sub:'3-step staged exit',body:'Rather than one large exit, TradeGuard can schedule exits in 3 tranches over 45 minutes. This averages your exit price and removes the single point of emotional decision.',stat:'Staged exits in downtrends average 1.8% better exit price vs single-shot exits.'},action:{label:'Staged exit plan',btns:[{t:'Sell 33% now, 33% in 20m, 33% in 40m',c:'ac-btn-p'},{t:'Customise tranches',c:'ac-btn-s'},{t:'Sell all at once',c:'ac-btn-d'}]}},
+        'Wait & watch':{sig:{bg:'rgba(170,170,170,.07)',border:'rgba(170,170,170,.15)',iconColor:'#888',iconBg:'rgba(170,170,170,.1)',title:'Observation mode',sub:'No action is also a trade',body:'The macro environment shows mixed signals. Institutional flows are still net-long. Waiting for 30 minutes before deciding has historically produced better outcomes for you in this market type.',stat:'In similar macro setups, your "wait 30 min" decisions outperformed immediate exits by avg ₹28,000.'},action:{label:'Activate observation mode',btns:[{t:'Watch for 30 min, then decide',c:'ac-btn-p'},{t:'Set a price alert instead',c:'ac-btn-s'}]}}
+      };return d[pill]||d['Stop-loss'];
+    }
+  },
+  n4:{
+    pills:['Buy put hedge','Sell call','Collar strategy','Spread hedge'],
+    content:(pill)=>{
+      const d={
+        'Buy put hedge':{sig:{bg:'rgba(191,90,242,.08)',border:'rgba(191,90,242,.25)',iconColor:'#bf5af2',iconBg:'rgba(191,90,242,.15)',title:'Buy a put to hedge',sub:'Cap loss, keep upside',body:'Instead of selling your NIFTY long, buy a 21,000 PE (put option). This caps your maximum loss at ₹15,000 while keeping you in the trade if the market reverses.',stat:'Max loss without hedge: unlimited downside. With 21,000 PE: ₹15,000 cap. Premium cost: est. ₹4,200.'},action:{label:'Hedge options',btns:[{t:'Buy 21,000 PE — recommended',c:'ac-btn-p'},{t:'Choose expiry and strike',c:'ac-btn-s'},{t:'Skip hedge, exit position',c:'ac-btn-d'}]},hedge:[{v:'21,000',l:'Strike'},{v:'₹4,200',l:'Premium'},{v:'₹15k',l:'Max loss'},{v:'Unlimited',l:'Upside kept'}]},
+        'Sell call':{sig:{bg:'rgba(191,90,242,.08)',border:'rgba(191,90,242,.25)',iconColor:'#bf5af2',iconBg:'rgba(191,90,242,.15)',title:'Sell a call to offset',sub:'Generate premium income',body:'Selling a 21,500 CE against your long futures position generates ₹3,800 in premium, partially offsetting your current unrealised loss. Risk: capped upside above 21,500.',stat:'Net position cost basis improves by ₹3,800. Effective breakeven drops from 21,600 to 21,218.'},action:{label:'Suggested action',btns:[{t:'Sell 21,500 CE — 1 lot',c:'ac-btn-p'},{t:'Choose different strike',c:'ac-btn-s'},{t:'No hedge needed',c:'ac-btn-s'}]},hedge:[{v:'21,500',l:'Strike'},{v:'₹3,800',l:'Premium in'},{v:'21,218',l:'New BEP'},{v:'Capped',l:'Above 21,500'}]},
+        'Collar strategy':{sig:{bg:'rgba(191,90,242,.08)',border:'rgba(191,90,242,.25)',iconColor:'#bf5af2',iconBg:'rgba(191,90,242,.15)',title:'Collar: protect both sides',sub:'Buy put + sell call',body:'A collar combines buying a 21,000 PE and selling a 21,500 CE. The sold call premium funds the put cost. Net cost: near zero. You are protected below 21,000 and capped above 21,500.',stat:'Best suited when you want to hold through volatility without risking a large drawdown.'},action:{label:'Build collar',btns:[{t:'Apply collar strategy',c:'ac-btn-p'},{t:'Review legs individually',c:'ac-btn-s'},{t:'Exit instead',c:'ac-btn-d'}]},hedge:[{v:'21,000 PE',l:'Buy'},{v:'21,500 CE',l:'Sell'},{v:'~₹400',l:'Net cost'},{v:'Protected',l:'Status'}]},
+        'Spread hedge':{sig:{bg:'rgba(191,90,242,.08)',border:'rgba(191,90,242,.25)',iconColor:'#bf5af2',iconBg:'rgba(191,90,242,.15)',title:'Bear put spread',sub:'Defined cost, defined gain',body:'Buy a 21,000 PE and sell a 20,800 PE to create a defined-risk hedge. Max gain on hedge: ₹10,000. Max cost: ₹2,600. Covers a 200-point further fall.',stat:'Spread cost is 38% cheaper than outright put. Covers a fall to 20,800 with ₹10k max hedge payoff.'},action:{label:'Spread setup',btns:[{t:'Buy spread — 21,000/20,800 PE',c:'ac-btn-p'},{t:'Modify strikes',c:'ac-btn-s'},{t:'No hedge',c:'ac-btn-s'}]},hedge:[{v:'21,000 PE',l:'Buy'},{v:'20,800 PE',l:'Sell'},{v:'₹2,600',l:'Net cost'},{v:'₹10k',l:'Max hedge gain'}]}
+      };return d[pill]||d['Buy put hedge'];
+    }
+  },
+  n5:{
+    pills:['Triggered lock','Daily limit','Post-crash','Manual reset'],
+    content:(pill)=>{
+      const d={
+        'Triggered lock':{sig:{bg:'rgba(255,69,58,.1)',border:'rgba(255,69,58,.35)',iconColor:'#ff453a',iconBg:'rgba(255,69,58,.2)',title:'Trading locked: 28 min',sub:'Pattern threshold crossed',body:'You have triggered the third emotional trading signal in one session: rapid exits, a revenge trade attempt, and a post-loss buy. Your pre-set rule activates a 30-minute full lock.',stat:'In similar sessions, continuing to trade led to an avg additional loss of ₹52,000. The lock is your own rule protecting you.'},action:{label:'Your options',btns:[{t:'Accept cooldown (recommended)',c:'ac-btn-p'},{t:'Review what triggered this',c:'ac-btn-s'},{t:'Override (requires supervisor pin)',c:'ac-btn-d'}]},cd:{mins:28,total:30}},
+        'Daily limit':{sig:{bg:'rgba(255,159,10,.1)',border:'rgba(255,159,10,.3)',iconColor:'#ff9f0a',iconBg:'rgba(255,159,10,.15)',title:'Daily trade limit reached',sub:'10 of 10 trades used',body:'You have reached your self-imposed daily trade limit of 10 orders. Your win rate beyond this limit on previous days is 21%. Setting this rule was your calm self making a decision.',stat:'Days you exceeded your trade limit: avg session loss ₹34k. Days you respected it: avg gain ₹8.2k.'},action:{label:"Today's session",btns:[{t:'End session for today',c:'ac-btn-p'},{t:'Review session performance',c:'ac-btn-s'},{t:'Add 3 more trades (override)',c:'ac-btn-d'}]},cd:{mins:null,total:null,done:true}},
+        'Post-crash':{sig:{bg:'rgba(255,69,58,.1)',border:'rgba(255,69,58,.35)',iconColor:'#ff453a',iconBg:'rgba(255,69,58,.2)',title:'Post-crash mandatory rest',sub:'Nifty down 3.8% today',body:'A broad market crash has occurred. TradeGuard applies a 45-minute observation window. New positions during crash bottoms have a 71% reversal rate. You will be notified at recovery signal.',stat:'This is not a permanent lock. It is a pause to let the dust settle and your cortisol levels normalise.'},action:{label:'During this window',btns:[{t:'Review macro context',c:'ac-btn-p'},{t:'Set an alert for 21,200 recovery',c:'ac-btn-s'}]},cd:{mins:45,total:45}},
+        'Manual reset':{sig:{bg:'rgba(48,209,88,.08)',border:'rgba(48,209,88,.2)',iconColor:'#30d158',iconBg:'rgba(48,209,88,.15)',title:'Cooldown complete',sub:'Session analysis ready',body:'Your 30-minute cooldown has ended. Before resuming, here is what happened: you avoided 2 emotional trades estimated to cost ₹44,000 based on your pattern history.',stat:'Emotional drag avoided this session: est. ₹44,000. You can now trade with a refreshed state.'},action:{label:'Resume trading',btns:[{t:'Resume trading',c:'ac-btn-p'},{t:'Review session analysis',c:'ac-btn-s'}]},cd:{mins:0,total:30,done:true,complete:true}}
+      };return d[pill]||d['Triggered lock'];
+    }
+  }
+};
+
+let activeNav='n1';
+let activePill={n1:0,n2:0,n3:0,n4:0,n5:0};
+let activeHTab={n1:0,n2:0,n3:0,n4:0,n5:0};
+
+function buildHeader(){
+  const hd=HEADER_DATA[activeNav];
+  const tabs=['Watchlist','Portfolio','P&L'];
+  const t=activeHTab[activeNav];
+  document.getElementById('htab-row').innerHTML=tabs.map((tb,i)=>`<div class="htab ${i===t?'active':''}" onclick="switchHTab(${i})">${tb}</div>`).join('');
+  let html='';
+  if(t===0){
+    html=`<div class="watchlist-view">${hd.watchlist.map(w=>`<div class="wl-row"><div class="wl-left"><div class="wl-name">${w.name}</div><div class="wl-sub">${w.sub}</div></div><div class="wl-right"><div class="wl-price">${w.price}</div><div class="wl-chg ${w.dir==='neg'?'neg':w.dir==='pos'?'pos':'neu'}">${w.chg}</div></div></div>`).join('')}</div>`;
+  } else if(t===1){
+    const p=hd.portfolio;
+    html=`<div class="portfolio-view">
+      <div class="port-summary">
+        <div class="port-pill"><div class="port-pill-label">Total value</div><div class="port-pill-val" style="color:#fff;">${p[0].total}</div></div>
+        <div class="port-pill"><div class="port-pill-label">Today's P&L</div><div class="port-pill-val" style="color:${p[0].dayDir==='neg'?'#ff453a':'#30d158'};">${p[0].day}</div></div>
+      </div>
+      ${p.slice(1).map(r=>`<div class="port-row"><div><div class="port-name">${r.name}</div><div class="port-sub">${r.sub}</div></div><div class="port-right"><div class="port-qty">${r.qty}</div><div class="port-pnl" style="color:${r.pnlDir==='neg'?'#ff453a':'#30d158'};">${r.pnl}</div></div></div>`).join('')}
+    </div>`;
+  } else {
+    const pl=hd.pnl;
+    html=`<div class="pnl-view">
+      <div class="pnl-summary">
+        <div class="port-pill"><div class="port-pill-label">Today</div><div class="port-pill-val" style="color:${pl.todayDir==='neg'?'#ff453a':'#30d158'};">${pl.today}</div></div>
+        <div class="port-pill"><div class="port-pill-label">This week</div><div class="port-pill-val" style="color:${pl.weekDir==='neg'?'#ff453a':'#30d158'};">${pl.week}</div></div>
+      </div>
+      ${pl.rows.map(r=>{
+        const bw=r.pct?parseInt(r.pct)+'%':'30%';
+        const bc=r.dir==='neg'?'#ff453a':'#30d158';
+        return `<div class="pnl-row"><div><div class="pnl-name">${r.name}</div><div class="pnl-type">${r.type}</div><div class="pnl-bar-wrap"><div class="pnl-bar" style="width:${bw};background:${bc};"></div></div></div><div><div class="pnl-amt" style="color:${bc};">${r.amt}</div><div class="pnl-pct">${r.pct}</div></div></div>`;
+      }).join('')}
+    </div>`;
+  }
+  document.getElementById('htab-content').innerHTML=html;
+}
+
+function switchHTab(i){activeHTab[activeNav]=i;buildHeader();}
+
+function buildScrollBody(){
+  const s=SCENARIOS[activeNav];
+  const nav=NAVS.find(n=>n.id===activeNav);
+  const pIdx=activePill[activeNav];
+  const pill=s.pills[pIdx];
+  const c=s.content(pill);
+
+  document.getElementById('notif-red').style.display=(activeNav==='n1'||activeNav==='n2')?'block':'none';
+
+  let hedgeHTML='';
+  if(activeNav==='n4'&&c.hedge){
+    hedgeHTML=`<div class="hedge-card"><div class="ac-label">Hedge parameters</div><div class="hedge-row">${c.hedge.map(h=>`<div class="hpill"><div class="hv" style="color:#bf5af2;">${h.v}</div><div class="hl">${h.l}</div></div>`).join('')}</div></div>`;
+  }
+  let cdHTML='';
+  if(activeNav==='n5'&&c.cd){
+    if(c.cd.complete){cdHTML=`<div class="cooldown-card" style="border-color:rgba(48,209,88,.3);"><div class="ac-label" style="color:#30d158;">Cooldown complete</div><div class="pnl-compare"><div class="pc-pill" style="background:rgba(48,209,88,.08);"><div class="pcv" style="color:#30d158;">₹44k</div><div class="pcl" style="color:#30d158;">loss avoided</div></div><div class="pc-pill" style="background:#1e1e20;"><div class="pcv" style="color:#aaa;">30 min</div><div class="pcl" style="color:#555;">duration</div></div></div></div>`;}
+    else if(c.cd.done){cdHTML=`<div class="cooldown-card" style="border-color:rgba(255,159,10,.3);"><div class="ac-label" style="color:#ff9f0a;">Daily limit</div><div class="tap-counter">${[0,1,2,3,4,5,6,7,8,9].map(()=>`<div class="tap-dot filled"></div>`).join('')}</div><div style="font-size:11px;color:#666;text-align:center;margin-top:8px;">10 of 10 trades used today</div></div>`;}
+    else{const pct=Math.round(((c.cd.total-c.cd.mins)/c.cd.total)*100);const r=34,circ=2*Math.PI*r;const dash=circ*(1-pct/100);cdHTML=`<div class="cooldown-card"><div class="ac-label" style="color:#ff453a;">Trading locked</div><div class="cd-ring-wrap"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="${r}" fill="none" stroke="#2a1a1a" stroke-width="6"/><circle cx="45" cy="45" r="${r}" fill="none" stroke="#ff453a" stroke-width="6" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${dash.toFixed(1)}" stroke-linecap="round" transform="rotate(-90 45 45)"/><text x="45" y="41" text-anchor="middle" font-size="16" font-weight="600" fill="#ff453a">${c.cd.mins}m</text><text x="45" y="55" text-anchor="middle" font-size="10" fill="#666">remaining</text></svg></div></div>`;}
+  }
+
+  document.getElementById('scroll-body').innerHTML=`
+    <div class="scenario-track-wrap">
+      <div class="track-label">Market scenario</div>
+      <div class="track-pills">${s.pills.map((p,i)=>`<div class="spill ${i===pIdx?'active':'inactive'}" onclick="switchPill(${i})">${p}</div>`).join('')}</div>
+    </div>
+    <div class="signal-card" style="background:${c.sig.bg};border-color:${c.sig.border};">
+      <div class="sc-header">
+        <div class="sc-icon" style="background:${c.sig.iconBg};">
+          <svg width="14" height="14" fill="none" stroke="${c.sig.iconColor}" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div><div class="sc-title">${c.sig.title}</div><div class="sc-sub">${c.sig.sub}</div></div>
+      </div>
+      <div class="sc-body">${c.sig.body}</div>
+      <div class="sc-stat">${c.sig.stat}</div>
+    </div>
+    ${cdHTML}${hedgeHTML}
+    <div class="action-card">
+      <div class="ac-label">${c.action.label}</div>
+      <div class="ac-btns">${c.action.btns.map(b=>`<div class="ac-btn ${b.c}">${b.t}</div>`).join('')}</div>
+    </div>
+    <div style="height:8px;"></div>`;
+  document.getElementById('scroll-body').scrollTop=0;
+}
+
+function switchNav(id){activeNav=id;buildNav();buildHeader();buildScrollBody();}
+function switchPill(idx){activePill[activeNav]=idx;buildScrollBody();}
+
+function buildNav(){
+  document.getElementById('bottom-nav').innerHTML=NAVS.map((n,i)=>`
+    <div class="nav-i" onclick="switchNav('${n.id}')">
+      <svg width="20" height="20" fill="none" stroke="${activeNav===n.id?n.color:'#444'}" stroke-width="1.8" viewBox="0 0 24 24">
+        ${i===0?'<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>':i===1?'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>':i===2?'<polyline points="9 18 15 12 9 6"/>':i===3?'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>':'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'}
+      </svg>
+      <div class="nav-dot-line" style="background:${activeNav===n.id?n.color:'transparent'};"></div>
+      <div class="nav-lbl" style="color:${activeNav===n.id?n.color:'#444'};">${n.label}</div>
+    </div>`).join('');
+}
+
+buildNav();buildHeader();buildScrollBody();
+</script>
+</body>
+</html>
